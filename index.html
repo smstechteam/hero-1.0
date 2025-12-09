@@ -5,26 +5,99 @@
   <title>ආයතන උපදේශකය - AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
-    #chat { background: white; padding: 15px; border-radius: 12px; margin: 10px 0; height: 60vh; overflow-y: auto; }
-    input { width: 70%; padding: 12px; border: 1px solid #ccc; border-radius: 20px; }
-    button { 
-      width: 25%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 20px; 
-      margin-left: 5px; font-weight: bold;
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background: #121212; /* දුභාර කළු */
+      color: #e0f0e0; /* මෘදු කොල */
+      margin: 0;
     }
-    .user { color: #0d6efd; font-weight: bold; }
-    .ai { color: #333; background: #f1f5f9; padding: 8px; border-radius: 8px; margin: 5px 0; }
+    h2 {
+      color: #4caf50; /* පැහැදිලි කොල */
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #chat {
+      background: #1e1e1e; /* දුභාර තද කළු */
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
+      height: 60vh;
+      overflow-y: auto;
+      border: 1px solid #2e7d32; /* දුභාර කොල සීමාව */
+      box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+    }
+    .input-container {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    #question {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #2e7d32;
+      border-radius: 20px;
+      background: #252525;
+      color: #e0f0e0;
+      outline: none;
+    }
+    #question::placeholder {
+      color: #66bb66;
+    }
+    button {
+      width: auto;
+      padding: 12px 20px;
+      background: #2e7d32; /* දුභාර කොල */
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #4caf50;
+    }
+    .user {
+      color: #64b5f6; /* නිල්-මෘදු */
+      font-weight: bold;
+      margin: 8px 0;
+    }
+    .ai {
+      color: #e0f0e0;
+      background: #252525;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 8px 0;
+      border-left: 3px solid #4caf50;
+    }
+    .loading {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #4caf50;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
-  <h2>🤖 ආයතන AI උපදේශකය</h2>
+  <h2>🤖 HNP AI Friend - HERO 1.0</h2>
   <div id="chat"></div>
-  <input type="text" id="question" placeholder="ඔබේ ප්‍රශ්නය ඇතුළත් කරන්න..." />
-  <button onclick="ask()">යවන්න</button>
+  <div class="input-container">
+    <input type="text" id="question" placeholder="ඔබේ ප්‍රශ්නය ඇතුළත් කරන්න..." />
+    <button onclick="ask()">යවන්න</button>
+  </div>
 
   <script>
     // 🔗 Apps Script Web App URL (Deploy කළ පසු ලැබෙන URL එක)
-    const API_URL = "https://script.google.com/macros/s/AKfycbzP23JdS_2XnIfIVI8DbH8mwUJ3L07kb3OOO1aD4o93lLU9Iz_ndBGgVrZmj08ZGAPP/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz3UYUtfBjsJPzlUNMERpKMzvgAL2un0HLvzgvulXyD4ff_ARQL9tky1RviIiEnjpqs/exec";
 
     async function ask() {
       const input = document.getElementById("question");
@@ -36,12 +109,20 @@
       chat.scrollTop = chat.scrollHeight;
       input.value = "";
 
+      // 🌀 Loading indicator
+      chat.innerHTML += `<div class="ai"><span class="loading"></span>උපදේශකය: පිළිතුර සකස් කරමින්...</div>`;
+      chat.scrollTop = chat.scrollHeight;
+
       try {
         const res = await fetch(API_URL + "?q=" + encodeURIComponent(q));
         const reply = await res.text();
-        chat.innerHTML += `<div class="ai">උපදේශකය: ${reply}</div>`;
+        // Remove loading line and replace with actual reply
+        const loadingDiv = chat.lastElementChild;
+        loadingDiv.innerHTML = `හී​රෝ: ${reply}`;
       } catch (e) {
-        chat.innerHTML += `<div class="ai">කණගාටුයි, පිළිතුර ලබා ගත නොහැකි විය.</div>`;
+        const loadingDiv = chat.lastElementChild;
+        loadingDiv.innerHTML = "කණගාටුයි, පිළිතුර ලබා ගත නොහැකි විය.";
+        loadingDiv.style.color = "#ff6b6b";
       }
       chat.scrollTop = chat.scrollHeight;
     }
